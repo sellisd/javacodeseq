@@ -1,3 +1,4 @@
+package codeseq;
 import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.Range;
 import com.github.javaparser.StaticJavaParser;
@@ -6,6 +7,10 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitor;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+
 
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -17,13 +22,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class CodeSeq {
-
-    /** private static String outputFilePath = "./java_data.tsv";*/
-
-    public static void main(String[] args){
-        String outputFilePath = "./java_data.tsv";
-        String RootPath = "/mnt/Data/scratch/github_java";
+@Command(name = "CodeSeq", version = "1.0.1", mixinStandardHelpOptions = true)
+public class CodeSeq implements Runnable{
+    @Option(names = { "-o", "--output"}, description = "Output File and path.")
+    String outputFilePath = "./java_data.tsv";
+    @Option(names = { "-i", "--input"}, description = "Input Path to be recursively searched for .java files")
+    String RootPath = "/mnt/Data/scratch/";
+    @Override
+    public void run(){
         try{
             FileWriter outputFile = new FileWriter(outputFilePath);
             outputFile.write("class\tclass_lines\tmethod\tmethod_lines\n");
@@ -52,7 +58,10 @@ public class CodeSeq {
             ex.printStackTrace();
         }
     }
-
+    public static void main(String[] args){
+        int exitCode = new CommandLine(new CodeSeq()).execute(args);
+        System.exit(exitCode);
+    }
     private static class MethodNamePrinter extends VoidVisitorAdapter<FileWriter> {
         @Override
         public void visit(ClassOrInterfaceDeclaration cl, FileWriter arg) {

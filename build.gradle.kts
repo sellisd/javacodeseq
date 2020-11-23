@@ -1,15 +1,20 @@
 plugins {
     java
+    application
 }
 
 group = "org.sellisd"
-version = "1.0.0"
+version = "1.0.1"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testCompile("junit", "junit", "4.12")
     implementation("com.github.javaparser:javaparser-core:3.17.0")
+    implementation("info.picocli:picocli:4.5.2")
+}
+
+application{
+    mainClassName="codeseq.CodeSeq"
 }
