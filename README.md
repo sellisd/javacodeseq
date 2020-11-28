@@ -1,5 +1,5 @@
 
-# A Tool extracting statistics from java ASTs (Abstract Syntax Trees)
+# A tool for extracting statistics from java ASTs (Abstract Syntax Trees)
 
 > A java program that recursively processes java source code and extract statictics
 
