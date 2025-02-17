@@ -72,7 +72,7 @@ public class CodeSeq implements Runnable{
                 Range r = method.getRange().get();
                 int loc = Math.max(r.begin.line, r.end.line) - Math.min(r.begin.line, r.end.line) + 1;
                 try{
-                    arg.write(cl.getName() + "\t" + class_loc + "\t" + method.getName() + "\t" + loc + "\n");
+                    arg.write(cl.getNameAsString() + "\t" + class_loc + "\t" + method.getNameAsString() + "\t" + loc + "\n");
                 }catch(IOException ex){
                     System.out.println("Error writing to file");
                 }
