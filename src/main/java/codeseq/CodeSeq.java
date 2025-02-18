@@ -52,6 +52,8 @@ public class CodeSeq implements Runnable{
                         methodNamePrinter.visit(cu, outputFile);
                     } catch (ParseProblemException e) {
                         logger.log(Level.INFO, "Skipping file due to parse problem: " + fileName);
+                    } catch (StackOverflowError e) {
+                        logger.log(Level.INFO, "Skipping file due to stack overflow error while parsing file: " + fileName, e);
                     }
                 }
                 outputFile.close();
@@ -59,7 +61,7 @@ public class CodeSeq implements Runnable{
                 e.printStackTrace();
             }
         }catch(IOException ex){
-            System.out.println("Error writing to file");
+            logger.log(Level.ERROR("Error writing to file"));
             ex.printStackTrace();
         }
     }
@@ -80,7 +82,6 @@ public class CodeSeq implements Runnable{
                 int loc = Math.max(r.begin.line, r.end.line) - Math.min(r.begin.line, r.end.line) + 1;
                 try {
                     arg.write(cl.getNameAsString() + "\t" + class_loc + "\t" + method.getNameAsString() + "\t" + loc + "\n");
-                    logger.log(Level.INFO, "Processed method: " + method.getNameAsString() + " in class: " + cl.getNameAsString());
                 } catch (IOException ex) {
                     logger.log(Level.SEVERE, "Error writing to file for method: " + method.getNameAsString() + " in class: " + cl.getNameAsString(), ex);
                 }
