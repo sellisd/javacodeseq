@@ -61,7 +61,7 @@ public class CodeSeq implements Runnable{
                 e.printStackTrace();
             }
         }catch(IOException ex){
-            logger.log(Level.ERROR("Error writing to file"));
+            logger.log(Level.SEVERE, "Error writing to file");
             ex.printStackTrace();
         }
     }
