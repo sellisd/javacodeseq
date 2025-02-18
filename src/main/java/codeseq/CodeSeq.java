@@ -10,7 +10,8 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -24,6 +25,8 @@ import java.util.stream.Stream;
 
 @Command(name = "CodeSeq", version = "1.0.1", mixinStandardHelpOptions = true)
 public class CodeSeq implements Runnable{
+    private static final Logger logger = Logger.getLogger(CodeSeq.class.getName());
+
     @Option(names = { "-o", "--output"}, description = "Output File and path.")
     String outputFilePath = "./java_data.tsv";
     @Option(names = { "-i", "--input"}, description = "Input Path to be recursively searched for .java files")
@@ -38,15 +41,17 @@ public class CodeSeq implements Runnable{
                 for (String fileName : result) {
                     Path fileNamePath = Paths.get(fileName);
                     if (!Files.isRegularFile(fileNamePath)) {
+                        logger.log(Level.INFO, "Skipping non-regular file: " + fileName);
                         continue;
                     }
+                    logger.log(Level.INFO, "Visiting file: " + fileName);
                     FileInputStream f = new FileInputStream(fileName);
                     try {
                         CompilationUnit cu = StaticJavaParser.parse(f);
                         VoidVisitor<FileWriter> methodNamePrinter = new MethodNamePrinter();
                         methodNamePrinter.visit(cu, outputFile);
                     } catch (ParseProblemException e) {
-                        System.out.println("Skipping file: " + fileName);
+                        logger.log(Level.INFO, "Skipping file due to parse problem: " + fileName);
                     }
                 }
                 outputFile.close();
@@ -63,6 +68,8 @@ public class CodeSeq implements Runnable{
         System.exit(exitCode);
     }
     private static class MethodNamePrinter extends VoidVisitorAdapter<FileWriter> {
+        private static final Logger logger = Logger.getLogger(MethodNamePrinter.class.getName());
+
         @Override
         public void visit(ClassOrInterfaceDeclaration cl, FileWriter arg) {
             super.visit(cl, arg);
@@ -71,10 +78,11 @@ public class CodeSeq implements Runnable{
             for (MethodDeclaration method : cl.getMethods()) {
                 Range r = method.getRange().get();
                 int loc = Math.max(r.begin.line, r.end.line) - Math.min(r.begin.line, r.end.line) + 1;
-                try{
+                try {
                     arg.write(cl.getNameAsString() + "\t" + class_loc + "\t" + method.getNameAsString() + "\t" + loc + "\n");
-                }catch(IOException ex){
-                    System.out.println("Error writing to file");
+                    logger.log(Level.INFO, "Processed method: " + method.getNameAsString() + " in class: " + cl.getNameAsString());
+                } catch (IOException ex) {
+                    logger.log(Level.SEVERE, "Error writing to file for method: " + method.getNameAsString() + " in class: " + cl.getNameAsString(), ex);
                 }
             }
         }
