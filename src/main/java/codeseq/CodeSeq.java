@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Command(name = "CodeSeq", version = "1.0.1", mixinStandardHelpOptions = true)
+@Command(name = "CodeSeq", version = "1.1.0", mixinStandardHelpOptions = true)
 public class CodeSeq implements Runnable{
     private static final Logger logger = Logger.getLogger(CodeSeq.class.getName());
 
@@ -44,7 +44,6 @@ public class CodeSeq implements Runnable{
                         logger.log(Level.INFO, "Skipping non-regular file: " + fileName);
                         continue;
                     }
-                    logger.log(Level.INFO, "Visiting file: " + fileName);
                     FileInputStream f = new FileInputStream(fileName);
                     try {
                         CompilationUnit cu = StaticJavaParser.parse(f);
